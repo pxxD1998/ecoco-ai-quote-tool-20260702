@@ -39,7 +39,7 @@ function renderItemsEditor() {
       <td><input aria-label="品名 ${index + 1}" value="${escapeHtml(item.name)}" data-index="${index}" data-key="name"></td>
       <td><input aria-label="數量 ${index + 1}" type="number" min="0" step="1" value="${item.qty}" data-index="${index}" data-key="qty"></td>
       <td><input aria-label="單價 ${index + 1}" type="number" min="0" step="1" value="${item.price}" data-index="${index}" data-key="price"></td>
-      <td class="item-subtotal">${currencyFormat(item.qty * item.price)}</td>
+      <td class="item-subtotal" data-subtotal="${index}">${currencyFormat(item.qty * item.price)}</td>
       <td class="no-print"><button type="button" class="danger" data-delete="${index}">刪除</button></td>
     </tr>
   `).join('');
@@ -94,6 +94,17 @@ function renderHistory() {
       <button type="button" class="secondary" data-history="${index}">載入</button>
     </div>
   `).join('') : '<p class="subtle">尚無歷史報價。</p>';
+}
+
+function updateItemSubtotal(index) {
+  const cell = document.querySelector(`[data-subtotal="${index}"]`);
+  const item = state.items[index];
+  if (!cell || !item) return;
+  cell.textContent = currencyFormat(readNumber(item.qty) * readNumber(item.price));
+}
+
+function updateItemSubtotals() {
+  state.items.forEach((_, index) => updateItemSubtotal(index));
 }
 
 function sync() {
@@ -157,8 +168,8 @@ $('itemsBody').addEventListener('input', (event) => {
   const key = input.dataset.key;
   if (!Number.isInteger(index) || !key) return;
   state.items[index][key] = key === 'name' ? input.value : readNumber(input.value);
+  if (key === 'qty' || key === 'price') updateItemSubtotal(index);
   renderQuote();
-  renderItemsEditor();
 });
 
 $('itemsBody').addEventListener('click', (event) => {
@@ -168,7 +179,10 @@ $('itemsBody').addEventListener('click', (event) => {
   sync();
 });
 
-fields.forEach((id) => $(id).addEventListener('input', renderQuote));
+fields.forEach((id) => $(id).addEventListener('input', () => {
+  if (id === 'currency') updateItemSubtotals();
+  renderQuote();
+}));
 $('addItemBtn').addEventListener('click', () => { state.items.push({ name: '新產品', qty: 1, price: 0 }); sync(); });
 $('saveHistoryBtn').addEventListener('click', saveHistory);
 $('loadSampleBtn').addEventListener('click', loadSample);
