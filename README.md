@@ -4,7 +4,9 @@
 
 ## Demo
 
-部署後網址：GitHub Pages URL 會在交付時填入。
+- 部署網址：https://pxxd1998.github.io/ecoco-ai-quote-tool-20260702/
+- Source Code：https://github.com/pxxD1998/ecoco-ai-quote-tool-20260702
+- AI Coding 對話紀錄：[`AI_CODING_LOG.md`](./AI_CODING_LOG.md)
 
 ## 已完成功能對照
 
