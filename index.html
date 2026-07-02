@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ECOCO 報價單工具</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">ECOCO AI Specialist Practical Test</p>
+      <h1>報價單快速產生器</h1>
+      <p class="subtle">把每天 30 分鐘的人工報價流程，整理成可新增品項、自動計算、可列印 PDF 的 Web 工具。</p>
+    </div>
+    <div class="brand-card" id="brandPreview">
+      <div class="logo" id="logoPreview">EC</div>
+      <div>
+        <strong id="brandNamePreview">ECOCO Demo</strong>
+        <span>Quotation Tool</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel controls" aria-label="報價設定">
+      <h2>基本資料</h2>
+      <div class="grid two">
+        <label>公司 / 品牌名稱
+          <input id="brandName" value="ECOCO Demo" autocomplete="organization">
+        </label>
+        <label>Logo 縮寫
+          <input id="logoText" value="EC" maxlength="4">
+        </label>
+        <label>主色
+          <input id="brandColor" type="color" value="#0f4c81">
+        </label>
+        <label>客戶名稱
+          <input id="customerName" value="王小明 / 測試客戶">
+        </label>
+        <label>客戶 Email
+          <input id="customerEmail" type="email" value="client@example.com">
+        </label>
+        <label>報價單編號
+          <input id="quoteNo">
+        </label>
+        <label>幣別
+          <select id="currency">
+            <option value="TWD">TWD 新台幣</option>
+            <option value="USD">USD 美元</option>
+          </select>
+        </label>
+        <label>稅率
+          <select id="taxRate">
+            <option value="0.05">5%</option>
+            <option value="0.08">8%</option>
+            <option value="0">免稅 / 另計</option>
+          </select>
+        </label>
+        <label>整單折扣
+          <input id="discount" type="number" min="0" step="1" value="0">
+        </label>
+        <label>有效日期
+          <input id="validUntil" type="date">
+        </label>
+      </div>
+
+      <h2>產品項目</h2>
+      <div class="table-wrap">
+        <table class="items-table" aria-label="產品清單">
+          <thead>
+            <tr>
+              <th>品名</th>
+              <th>數量</th>
+              <th>單價</th>
+              <th>小計</th>
+              <th class="no-print">操作</th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody"></tbody>
+        </table>
+      </div>
+      <div class="actions no-print">
+        <button type="button" class="secondary" id="addItemBtn">新增產品</button>
+        <button type="button" class="secondary" id="saveHistoryBtn">儲存歷史報價</button>
+        <button type="button" class="secondary" id="loadSampleBtn">載入範例</button>
+        <button type="button" class="danger" id="clearBtn">清空</button>
+      </div>
+    </section>
+
+    <section class="panel preview" aria-label="報價單預覽">
+      <div class="preview-toolbar no-print">
+        <div>
+          <h2>報價單預覽</h2>
+          <p class="subtle">可直接列印或另存 PDF。</p>
+        </div>
+        <button type="button" class="primary" id="printBtn">PDF 下載 / 列印</button>
+      </div>
+
+      <article id="quotePaper" class="quote-paper">
+        <div class="quote-top">
+          <div class="brand-card print-brand">
+            <div class="logo" id="paperLogo">EC</div>
+            <div>
+              <strong id="paperBrand">ECOCO Demo</strong>
+              <span>正式報價單</span>
+            </div>
+          </div>
+          <div class="quote-meta">
+            <h2>Quotation</h2>
+            <p>編號：<span id="paperQuoteNo"></span></p>
+            <p>日期：<span id="paperDate"></span></p>
+            <p>有效至：<span id="paperValidUntil"></span></p>
+          </div>
+        </div>
+
+        <div class="customer-box">
+          <strong>客戶資料</strong>
+          <p id="paperCustomer"></p>
+          <p id="paperEmail"></p>
+        </div>
+
+        <table class="quote-table">
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>品名</th>
+              <th>數量</th>
+              <th>單價</th>
+              <th>小計</th>
+            </tr>
+          </thead>
+          <tbody id="paperItems"></tbody>
+        </table>
+
+        <div class="totals">
+          <div>小計 <strong id="subtotalText"></strong></div>
+          <div>折扣 <strong id="discountText"></strong></div>
+          <div>稅額 <strong id="taxText"></strong></div>
+          <div class="grand">總額 <strong id="grandTotalText"></strong></div>
+        </div>
+
+        <footer class="paper-footer">
+          <p>備註：本報價單由 Web 報價工具自動產生，金額仍應由業務或主管確認後對外使用。</p>
+        </footer>
+      </article>
+    </section>
+  </main>
+
+  <section class="panel history no-print">
+    <h2>歷史報價</h2>
+    <p class="subtle">使用瀏覽器 localStorage 儲存，不上傳任何客戶資料。</p>
+    <div id="historyList" class="history-list"></div>
+  </section>
+
+  <section class="panel checklist no-print">
+    <h2>功能對照</h2>
+    <ol>
+      <li>新增 / 刪除產品</li><li>品名、數量、單價</li><li>自動計算總額</li><li>報價單預覽畫面</li><li>部署公開 URL</li><li>繁體中文介面</li><li>PDF 下載 / 列印</li><li>5% / 8% 稅金切換</li><li>客戶資料欄位</li><li>套用 logo / 顏色</li><li>儲存歷史報價</li><li>多幣別 TWD / USD</li><li>折扣計算</li>
+    </ol>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
