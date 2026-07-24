@@ -1,0 +1,14 @@
+{
+  "name": "quotation-workflow-portfolio",
+  "version": "2.0.0",
+  "private": true,
+  "description": "可攜、可驗證的繁體中文報價單作品 Demo",
+  "scripts": {
+    "start": "python3 -m http.server 4173",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1"
+  }
+}
